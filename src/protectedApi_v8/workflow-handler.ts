@@ -298,38 +298,3 @@ workflowHandlerApi.post('/userWFApplicationFieldsSearch', async (req, res) => {
         )
     }
 })
-
-workflowHandlerApi.post('/v2/userWFApplicationFieldsSearch', async (req, res) => {
-    try {
-        const rootOrgValue = req.headers.rootorg
-        const orgValue = req.headers.org
-        const wid = req.headers.wid
-        if (!rootOrgValue || !orgValue) {
-            res.status(400).send(ERROR.ERROR_NO_ORG_DATA)
-            return
-        }
-        const response = await axios.post(
-            API_END_POINTS.userWfFieldsSearch,
-            req.body,
-            {
-                ...axiosRequestConfig,
-                headers: {
-                    Authorization: CONSTANTS.SB_API_KEY,
-                    org: orgValue,
-                    rootOrg: rootOrgValue,
-                    wid,
-                     // tslint:disable-next-line: all
-                     'x-authenticated-user-token': extractUserToken(req),
-                },
-            }
-        )
-        res.status(response.status).send(response.data)
-    } catch (err) {
-        logError(failedToProcess + err)
-        res.status((err && err.response && err.response.status) || 500).send(
-            (err && err.response && err.response.data) || {
-                error: unknownError,
-            }
-        )
-    }
-})
